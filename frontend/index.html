@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScanSafe – Be Safe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Intro Animation Script -->
+    <script>
+    (function () {
+      setTimeout(() => {
+        const overlay = document.getElementById('introOverlay');
+        const badge   = document.getElementById('introBadge');
+        const line1   = document.getElementById('introLine1');
+        const line2   = document.getElementById('introLine2');
+        const line3   = document.getElementById('introLine3');
+        const sub     = document.getElementById('introSub');
+
+        if (!overlay) return;
+
+        const content = [badge, line1, line2, line3, sub].filter(Boolean);
+
+        // Set initial states
+        gsap.set(overlay, { opacity: 1, backgroundColor: '#f8fafc' });
+        gsap.set(content, { opacity: 0, y: 32 });
+
+        // Build the timeline
+        const tl = gsap.timeline();
+
+        // ── Phase 1: Elements fade in from below ──
+        tl.to(badge, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, 0.2);
+        tl.to(line1, { opacity: 1, y: 0, duration: 0.65, ease: 'power4.out' }, 0.42);
+        tl.to(line2, { opacity: 1, y: 0, duration: 0.65, ease: 'power4.out' }, 0.58);
+        tl.to(line3, { opacity: 1, y: 0, duration: 0.65, ease: 'power4.out' }, 0.74);
+        tl.to(sub, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.8);
+
+        // ── Phase 2: Pause ──
+        tl.to({}, { duration: 0.8 });
+
+        // ── Phase 3: Everything fades out upward ──
+        tl.to(content, {
+          opacity: 0,
+          y: -18,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: 'power2.in',
+        });
+
+        // ── Phase 4: Overlay turns dark navy, then fades away ──
+        tl.to(overlay, {
+          backgroundColor: '#0f172a',
+          duration: 0.55,
+          ease: 'power2.inOut',
+        }, '-=0.15');
+
+        tl.to(overlay, {
+          opacity: 0,
+          duration: 0.6,
+          ease: 'power2.inOut',
+          onComplete: function () {
+            overlay.style.display = 'none';
+          },
+        });
+      }, 500); // give react time to render
+    })();
+    </script>
+  </body>
+</html>

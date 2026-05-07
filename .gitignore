@@ -1,0 +1,46 @@
+# ===== Dependencies =====
+node_modules/
+
+# ===== Environment Variables (contain secrets) =====
+.env
+.env.local
+.env.production
+.env.*.local
+
+# ===== Build Output =====
+frontend/dist/
+frontend/dist-ssr/
+
+# ===== Database Dumps (may contain real user data) =====
+*.backup
+*_backup.sql
+*.dump
+
+# ===== Logs =====
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ===== OS Files =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# ===== Editor / IDE =====
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ===== Misc =====
+*.local
+.cache/

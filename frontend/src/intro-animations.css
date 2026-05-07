@@ -1,0 +1,103 @@
+/*
+  Intro Animation Styles
+  ----------------------
+  Colors:
+    #f8fafc  → off-white background
+    #0f172a  → deep navy (transition color)
+    #1e293b  → headline text
+    #22c55e  → green accent
+    #16a34a  → green-dark
+    #64748b  → body text
+    #15803d  → badge text
+*/
+
+/* ── Full-screen overlay ── */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* background-color is set + animated by GSAP */
+}
+
+/* ── Centred content block ── */
+.intro-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  max-width: 660px;
+  padding: 0 24px;
+}
+
+/* ── Badge ── */
+.intro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(34, 197, 94, 0.10);
+  border: 1px solid rgba(34, 197, 94, 0.30);
+  color: #15803d;
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+/* ── Headline ── */
+.intro-headline {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.1;
+}
+
+.intro-line {
+  display: block;
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: -0.02em;
+}
+
+/* "Digital Payments" gradient text */
+.intro-accent {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Green shimmer divider ── */
+.intro-divider {
+  width: 200px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #22c55e, transparent);
+}
+
+/* ── Sub-text ── */
+.intro-sub {
+  margin: 0;
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  color: #64748b;
+  max-width: 420px;
+  line-height: 1.65;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .intro-line    { font-size: 2rem; }
+  .intro-divider { width: 140px; }
+}
