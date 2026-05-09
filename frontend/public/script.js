@@ -1,7 +1,6 @@
 var API = window.location.hostname === 'localhost' && window.location.port !== '5000' ? 'http://localhost:5000/api' : '/api';
 
 
-// ===== THEME =====
 function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
@@ -22,7 +21,7 @@ function initTheme() {
   if(dot) dot.style.transform = saved === 'dark' ? 'translateX(20px)' : 'translateX(0)';
 }
 
-// ===== SIDEBAR =====
+
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
   document.getElementById('sidebar-overlay').classList.toggle('show');
@@ -34,7 +33,7 @@ function closeSidebar() {
   document.getElementById('hamburger').classList.remove('open');
 }
 
-// ===== NAV PILL ANIMATION =====
+
 function updateNavPill(activeBtn) {
   const pill = document.getElementById('nav-pill');
   const container = document.getElementById('nav-links');
@@ -45,7 +44,7 @@ function updateNavPill(activeBtn) {
   pill.style.width = btnRect.width + 'px';
 }
 
-// ===== NAVIGATION =====
+
 let currentPage = 'home';
 let chartsInited = false;
 
@@ -66,7 +65,7 @@ function navigate(page) {
   if(page === 'try') showTry('options');
 }
 
-// Hover pill effect
+
 document.querySelectorAll('.nav-links button').forEach(btn => {
   btn.addEventListener('mouseenter', () => updateNavPill(btn));
   btn.addEventListener('mouseleave', () => {
@@ -75,7 +74,7 @@ document.querySelectorAll('.nav-links button').forEach(btn => {
   });
 });
 
-// ===== AUTH =====
+
 let authMode = 'login';
 let currentUser = null;
 let profilePicData = null;
@@ -90,7 +89,7 @@ function updateNavForUser() {
   const area = document.getElementById('nav-user-area');
   if(!area) return;
 
-  // Update hero buttons
+
   const heroBtns = document.getElementById('hero-btns');
   if(heroBtns) {
     if(currentUser) {
@@ -133,7 +132,7 @@ function updateNavForUser() {
           </div>
         </div>
       </div>`;
-    // Load real post/like stats for dropdown
+
     fetch(`${API}/posts`).then(r=>r.json()).then(posts => {
       const mine = posts.filter(p => p.user_id === currentUser.id);
       const likes = mine.reduce((s,p) => s+parseInt(p.likes_count||0), 0);
@@ -248,7 +247,7 @@ async function updateCommunityProfile() {
     const labels = {none:'Not Certified',attempted:'Quiz Attempted',certified:'Certified ✓'};
     badge.innerHTML = `<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:${colors[status]};font-weight:600;"><span style="width:9px;height:9px;border-radius:50%;background:${colors[status]};display:inline-block;"></span>${labels[status]}</span>`;
   }
-  // Fetch real stats from DB
+
   try {
     const res = await fetch(`${API}/posts`);
     const posts = await res.json();
@@ -256,7 +255,7 @@ async function updateCommunityProfile() {
     const myLikes    = myPosts.reduce((s,p) => s + parseInt(p.likes_count||0), 0);
     const myComments = myPosts.reduce((s,p) => s + parseInt(p.comment_count||0), 0);
 
-    // Retry every 100ms until elements are found (max 10 tries)
+
     let tries = 0;
     const updateStats = () => {
       const sp = document.getElementById('stat-posts');
@@ -289,7 +288,7 @@ function showAuth(mode) {
 }
 function toggleAuth() { showAuth(authMode==='login'?'register':'login'); }
 
-// Enter key navigation in auth form
+
 function authKeyNav(e, nextId, submit=false) {
   if(e.key === 'Enter') {
     e.preventDefault();
@@ -334,7 +333,7 @@ function logoutUser() {
   currentUser = null; updateNavForUser(); location.reload();
 }
 
-// ===== PROFILE MODAL =====
+
 async function showProfileModal() {
   if(!requireLogin()) return;
   document.getElementById('profile-modal').classList.add('show');
@@ -349,9 +348,7 @@ async function showProfileModal() {
       ? `<img src="${currentUser.profile_pic_url}" alt=""/>`
       : (currentUser.full_name||'U')[0].toUpperCase();
 
-    // Fetch and update modal stats
     try {
-      // Posts + likes
       const postsRes = await fetch(`${API}/posts`);
       const posts    = await postsRes.json();
       const myPosts  = posts.filter(p => parseInt(p.user_id) === parseInt(currentUser.id));
@@ -361,7 +358,7 @@ async function showProfileModal() {
       document.getElementById('pd-total-likes').textContent = myLikes;
       document.getElementById('pd-comments').textContent    = myCommentCount;
 
-      // Programs hosted
+
       const progRes  = await fetch(`${API}/programs`);
       const programs = await progRes.json();
       const hosted   = programs.filter(p => parseInt(p.host_user_id) === parseInt(currentUser.id));
@@ -402,7 +399,7 @@ async function saveProfile() {
   } catch(e) { showToast('Could not save profile. Is server running?'); }
 }
 
-// ===== TOAST =====
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   document.getElementById('toast-msg').textContent = msg;
@@ -410,7 +407,7 @@ function showToast(msg) {
   setTimeout(()=>t.classList.remove('show'),3500);
 }
 
-// ===== FAQ =====
+
 function toggleFaq(el) {
   const ans = el.nextElementSibling;
   const icon = el.querySelector('span:last-child');
@@ -418,7 +415,7 @@ function toggleFaq(el) {
   icon.textContent = ans.classList.contains('open') ? '−' : '+';
 }
 
-// ===== PROGRAMS =====
+
 let progFilter = 'all'; let allPrograms = [];
 function setFilter(el,f) { document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); progFilter=f; renderPrograms(allPrograms); }
 function filterPrograms() { renderPrograms(allPrograms); }
@@ -492,7 +489,7 @@ function openProgramModal(id) {
     badge.className   = 'prog-modal-badge paid';
   }
 
-  // Update join button state
+
   const joined = JSON.parse(localStorage.getItem('joined_programs') || '[]');
   const joinBtn = document.getElementById('pmd-join-btn');
   if(joined.includes(String(id)) || joined.includes(id)) {
@@ -519,14 +516,14 @@ function joinFromModal() {
   if(_currentModalProgramId === null) return;
   const joinBtn = document.getElementById('pmd-join-btn');
   joinProgram(_currentModalProgramId, null);
-  // Sync button inside modal
+
   const joined = JSON.parse(localStorage.getItem('joined_programs') || '[]');
   if(joined.includes(String(_currentModalProgramId))) {
     joinBtn.textContent = '✅ Already Joined';
     joinBtn.style.background = '#2E7D31';
     joinBtn.disabled = true;
   }
-  // Also sync the card list join buttons
+
   checkJoinedPrograms();
 }
 async function submitProgram() {
@@ -553,23 +550,23 @@ async function submitProgram() {
 
 function joinProgram(id, btn) {
   if(!requireLogin()) return;
-  // Get current joined list
+
   const joined = JSON.parse(localStorage.getItem('joined_programs') || '[]');
   if(joined.includes(String(id)) || joined.includes(id)) {
     showToast('You have already joined this program!');
     return;
   }
-  // Save to localStorage
+
   joined.push(String(id));
   localStorage.setItem('joined_programs', JSON.stringify(joined));
-  // Update button
+
   if(btn) {
     btn.textContent = '✅ Joined';
     btn.style.background = '#2E7D31';
     btn.style.borderColor = '#2E7D31';
     btn.disabled = true;
   }
-  // Update attended count in localStorage
+
   const attended = parseInt(localStorage.getItem('programs_attended') || '0') + 1;
   localStorage.setItem('programs_attended', String(attended));
   showToast('You have joined the program! ✅');
@@ -588,7 +585,7 @@ function checkJoinedPrograms() {
   });
 }
 
-// ===== SURVEY =====
+
 const surveyQs = [
   {label:"Name of Participant?",type:"text",placeholder:"Enter full name"},
   {label:"Age?",type:"number",placeholder:"Enter age"},
@@ -626,7 +623,7 @@ function renderSurveyQ() {
   document.querySelector('.survey-input, .survey-textarea')?.focus();
 }
 
-// Collect current question's answer before moving
+
 function collectCurrentAnswer() {
   const q = surveyQs[surveyIdx];
   if(q.type==='text'||q.type==='number') {
@@ -651,7 +648,7 @@ async function surveyNext() {
   if(surveyIdx < surveyQs.length-1) {
     surveyIdx++; renderSurveyQ();
   } else {
-    // Map all answers to correct DB fields
+
     const a = surveyAnswers;
     const payload = {
       participant_name:               a[0]  || null,
@@ -695,20 +692,20 @@ function surveyPrev() {
   if(surveyIdx>0){ surveyIdx--; renderSurveyQ(); }
 }
 
-// ===== DASHBOARD =====
+
 let chartInstances = {};
 async function initCharts() {
   const green='#28CB8B', dark='#263238', light='#66BB69', tint='#A5D6A7',
         blue='#2194f3', warn='#FBC02D', err='#E53835';
 
-  // Destroy old charts first
+
   Object.values(chartInstances).forEach(c => c.destroy());
   chartInstances = {};
 
-  // Show loading on KPI cards
+
   document.getElementById('kpi-total').textContent = '...';
 
-  // Fetch real data from DB
+
   let d = null;
   try {
     const res = await fetch(`${API}/dashboard`);
@@ -720,20 +717,19 @@ async function initCharts() {
   const total = d?.total_responses || 0;
   document.getElementById('kpi-total').textContent = total.toLocaleString();
 
-  // ── Helper: calculate percentage from count ──────────────
+
   function pct(count, sum) {
     if(!sum) return 0;
     return parseFloat(((count/sum)*100).toFixed(1));
   }
 
-  // ── CHART 1 — UPI Acceptance ─────────────────────────────
+
   const accRows  = d?.upi_acceptance || [];
   const accTotal = accRows.reduce((s,r) => s + parseInt(r.count), 0);
   const accYes   = parseInt(accRows.find(r => r.accepts_upi === true)?.count  || 0);
   const accNo    = parseInt(accRows.find(r => r.accepts_upi === false)?.count || 0);
   const accYesPct = pct(accYes, accTotal);
   const accNoPct  = pct(accNo,  accTotal);
-  // Update KPI
   document.querySelectorAll('.kpi-card')[1].querySelector('.kpi-val').textContent =
     accTotal > 0 ? accYesPct + '%' : '—';
 
@@ -752,7 +748,7 @@ async function initCharts() {
     }
   });
 
-  // ── CHART 2 — Cash vs UPI ────────────────────────────────
+
   const prefRows  = d?.cash_vs_upi || [];
   const prefTotal = prefRows.reduce((s,r) => s + parseInt(r.count), 0);
   const upiCount  = parseInt(prefRows.find(r => r.payment_preference?.toLowerCase().includes('upi'))?.count  || 0);
@@ -761,7 +757,6 @@ async function initCharts() {
   const upiPct2   = pct(upiCount,  prefTotal);
   const cashPct2  = pct(cashCount, prefTotal);
   const bothPct2  = pct(bothCount, prefTotal);
-  // Update KPI
   document.querySelectorAll('.kpi-card')[2].querySelector('.kpi-val').textContent =
     prefTotal > 0 ? upiPct2 + '%' : '—';
 
@@ -778,7 +773,7 @@ async function initCharts() {
     }
   });
 
-  // ── CHART 3 — UPI Apps ───────────────────────────────────
+
   const appRows = d?.app_popularity || [];
   const appMap  = { 'phonepe': 0, 'phone pe': 0, 'google pay': 0, 'googlepay': 0,
                     'paytm': 0, 'bhim': 0, 'other': 0 };
@@ -809,14 +804,13 @@ async function initCharts() {
     }
   });
 
-  // ── CHART 4 — Age Groups ─────────────────────────────────
+
   const ageRows  = d?.age_groups || [];
   const ageTotal = ageRows.reduce((s,r) => s + parseInt(r.count), 0);
   const age1 = parseInt(ageRows.find(r => r.upi_age_group?.includes('18'))?.count || 0);
   const age2 = parseInt(ageRows.find(r => r.upi_age_group?.includes('31'))?.count || 0);
   const age3 = parseInt(ageRows.find(r => r.upi_age_group?.includes('50') || r.upi_age_group?.includes('51'))?.count || 0);
   const agePcts = [pct(age1,ageTotal), pct(age2,ageTotal), pct(age3,ageTotal)];
-  // Update KPI
   document.querySelectorAll('.kpi-card')[3].querySelector('.kpi-val').textContent =
     ageTotal > 0 ? agePcts[0] + '%' : '—';
 
@@ -836,7 +830,7 @@ async function initCharts() {
     }
   });
 
-  // ── CHART 5 — Problems ───────────────────────────────────
+
   const probRows  = d?.problems || [];
   const probTotal = probRows.reduce((s,r) => s + parseInt(r.count), 0);
   const probMap = { network: 0, fraud: 0, errors: 0, literacy: 0, none: 0 };
@@ -868,7 +862,7 @@ async function initCharts() {
     }
   });
 
-  // ── CHART 6 — Payment Preference ────────────────────────
+
   const pref6Rows  = d?.payment_prefs || [];
   const pref6Total = pref6Rows.reduce((s,r) => s + parseInt(r.count), 0);
   const cashPref = parseInt(pref6Rows.find(r => r.payment_preference?.toLowerCase() === 'cash')?.count || 0);
@@ -891,13 +885,13 @@ async function initCharts() {
     }
   });
 
-  // Show message if no survey data yet
+
   if(total === 0) {
     showToast('No survey data yet. Submit surveys to see live charts! 📊');
   }
 }
 
-// ===== LEARN =====
+
 let currentApp='phonepe', currentOp='pay';
 const appInfo = {
   phonepe:{png:'./assets/LearnPage/apps/phonepe.png',name:'PhonePe',desc:'India\'s most popular UPI app with 500M+ users. Secure, fast, and easy to use.'},
@@ -927,7 +921,7 @@ const upiSteps = {
     setup:{title:'BHIM – How to Setup',steps:['Download BHIM from Play Store (developer: NPCI).','Select your preferred language.','Enter your bank-registered SIM mobile number.','BHIM will auto-detect your bank account.','Set a 4-digit BHIM app PIN.','Create UPI PIN using debit card.','Your BHIM UPI ID is ready (e.g. 9876543210@upi).']}
   }
 };
-// Video data cache: { app_name: { operation: [{title, video_url, thumbnail_url}] } }
+
 let videoCache = {};
 let videoLoading = false;
 
@@ -935,7 +929,7 @@ async function loadAndRenderVideos() {
   const grid = document.getElementById('video-grid');
   if (!grid) return;
 
-  // Show skeleton while loading
+
   grid.innerHTML = `
     <div class="video-card" style="opacity:0.5;pointer-events:none;"><div class="play">⏳</div><p>Loading...</p></div>
     <div class="video-card" style="opacity:0.5;pointer-events:none;"><div class="play">⏳</div><p>Loading...</p></div>
@@ -947,7 +941,7 @@ async function loadAndRenderVideos() {
       const res = await fetch(`${API}/learn/videos`);
       if (!res.ok) throw new Error('API failed');
       const rows = await res.json();
-      // Build nested cache: videoCache[app_name][operation] = [{title, video_url, thumbnail_url}]
+
       rows.forEach(v => {
         const app = (v.app_name || '').toLowerCase();
         const op  = (v.operation || '').toLowerCase();
@@ -956,7 +950,7 @@ async function loadAndRenderVideos() {
         videoCache[app][op].push({ title: v.title, url: v.video_url, thumb: v.thumbnail_url });
       });
     } catch {
-      // Fallback: empty cache — renderVideos will show "add videos" message
+
       videoCache = { _fallback: true };
     }
     videoLoading = false;
@@ -1019,12 +1013,12 @@ function openVideo(url, title) {
     showToast('⚠️ Video URL not set — add it to the video_tutorials table in DB');
     return;
   }
-  // Convert YouTube watch URLs to embed URLs for in-page modal
+
   const embedUrl = url
     .replace('https://www.youtube.com/watch?v=', 'https://www.youtube.com/embed/')
     .replace('https://youtu.be/', 'https://www.youtube.com/embed/');
 
-  // If it looks like a YouTube embed, show inline modal; otherwise open in new tab
+
   if (embedUrl.includes('youtube.com/embed/')) {
     showVideoModal(embedUrl, title);
   } else {
@@ -1032,7 +1026,7 @@ function openVideo(url, title) {
   }
 }
 
-// ── Inline video modal (auto-created) ─────────────────────────
+
 function showVideoModal(embedUrl, title) {
   let modal = document.getElementById('_video_modal');
   if (!modal) {
@@ -1071,7 +1065,7 @@ function closeVideoModal() {
   }
 }
 
-// ===== QUIZ =====
+
 const quizQs = [
   {q:"What should you NEVER share with anyone, including bank employees?",opts:["Your name","Your UPI PIN / OTP","Your UPI ID","Your bank name"],ans:1},
   {q:"You receive a collect request and someone says 'Accept it to receive ₹500'. What happens if you enter your PIN?",opts:["You receive ₹500","Nothing happens","₹500 is SENT from your account","Your account gets blocked"],ans:2},
@@ -1136,7 +1130,7 @@ function renderQuizQ() {
   document.querySelector('.quiz-option')?.focus();
 }
 
-// Global Enter key for quiz — after answering, Enter moves to next
+
 document.addEventListener('keydown', e => {
   if(e.key === 'Enter' && quizAnswered && document.getElementById('quiz-active')?.style.display !== 'none') {
     e.preventDefault();
@@ -1156,10 +1150,10 @@ function answerQuiz(idx, el) {
   const correct = activeQuizQs[quizIdx].ans;
   const allOpts = Array.from(document.querySelectorAll('.quiz-option'));
 
-  // Disable all buttons first
+
   allOpts.forEach(btn => { btn.disabled=true; btn.style.pointerEvents='none'; btn.style.transition='none'; });
 
-  // Style correct answer — always green
+
   if(allOpts[correct]) {
     allOpts[correct].style.cssText = 'border:2px solid #28CB8B !important;background:#E8F5E9 !important;color:#1B5E20 !important;font-weight:700 !important;padding:12px 18px;border-radius:8px;font-size:14px;text-align:left;width:100%;pointer-events:none;';
   }
@@ -1167,7 +1161,7 @@ function answerQuiz(idx, el) {
   if(idx === correct) {
     quizScore++;
   } else {
-    // Style wrong answer — red
+
     el.style.cssText = 'border:2px solid #E53835 !important;background:#FFEBEE !important;color:#E53835 !important;font-weight:700 !important;padding:12px 18px;border-radius:8px;font-size:14px;text-align:left;width:100%;pointer-events:none;';
   }
 
@@ -1192,7 +1186,7 @@ async function showQuizResult() {
   }
 }
 
-// ===== TRY PAYMENT =====
+
 let simBalance=5000;
 function showTry(view) {
   document.getElementById('try-options-view').style.display=view==='options'?'block':'none';
@@ -1238,7 +1232,7 @@ async function loadRandomNGO() {
   } catch { display.innerHTML='<p style="color:var(--error);text-align:center;padding:20px;">Could not load NGO. Make sure server is running.</p>'; }
 }
 
-// ===== COMMUNITY =====
+
 let allPosts=[];
 async function loadPosts(search='') {
   const feed=document.getElementById('posts-feed'); if(!feed) return;
@@ -1247,7 +1241,7 @@ async function loadPosts(search='') {
     const res=await fetch(`${API}/posts?search=${encodeURIComponent(search)}`);
     allPosts=await res.json();
     renderPosts(allPosts);
-    // Update stats here — posts are already loaded so just calculate
+
     if(currentUser) {
       const myPosts    = allPosts.filter(p => parseInt(p.user_id) === parseInt(currentUser.id));
       const myLikes    = myPosts.reduce((s,p) => s + parseInt(p.likes_count||0), 0);
@@ -1271,7 +1265,7 @@ async function loadPosts(search='') {
 function renderPosts(posts) {
   const feed=document.getElementById('posts-feed'); if(!feed) return;
   if(posts.length===0){feed.innerHTML='<p style="color:var(--text-muted);padding:20px;">No posts yet. Be the first!</p>';return;}
-  // Sort newest first
+
   const sorted=[...posts].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
   feed.innerHTML=sorted.map((p,i)=>`
     <div class="post-card" id="post-${p.id||i}">
@@ -1351,7 +1345,7 @@ function editPost(id) {
   if(!postCard) { showToast('Post not found'); return; }
   const textEl = postCard.querySelector('.post-text');
   const oldContent = textEl.textContent;
-  // Replace text with editable input
+
   textEl.innerHTML = `
     <textarea class="survey-textarea" id="edit-post-${id}" style="min-height:60px;margin-bottom:8px;">${oldContent}</textarea>
     <div style="display:flex;gap:8px;">
@@ -1376,7 +1370,7 @@ async function saveEditPost(id, original) {
     if(res.ok) { showToast('Post updated! ✅'); loadPosts(); }
     else { showToast('Could not update post'); }
   } catch {
-    // Fallback — update locally
+
     const postCard = document.getElementById(`post-${id}`);
     if(postCard) postCard.querySelector('.post-text').textContent = newContent;
     showToast('Post updated locally ✅');
@@ -1392,7 +1386,7 @@ async function deletePost(id) {
     showToast('Post deleted ✅');
     loadPosts();
   } catch {
-    // Fallback — remove from DOM
+
     document.getElementById(`post-${id}`)?.remove();
     showToast('Post deleted ✅');
   }
@@ -1454,10 +1448,10 @@ async function loadComments(postId) {
   try {
     const res=await fetch(`${API}/posts/${postId}/comments`);
     const comments=await res.json();
-    // Sort newest first
+
     const sorted=[...comments].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
 
-    // If no comments from DB, show demo comments so styling is visible
+
     const displayComments = sorted.length > 0 ? sorted : [
       {id:'demo1', full_name:'Priya Patil', quiz_status:'certified', content:'This is very helpful! I learned how to use PhonePe safely. Thank you for this platform.', created_at: new Date(Date.now()-3600000), user_id:null},
       {id:'demo2', full_name:'Suresh Kumar', quiz_status:'attempted', content:'Great post! The fraud awareness section really opened my eyes about QR code scams.', created_at: new Date(Date.now()-7200000), user_id:null},
@@ -1490,12 +1484,12 @@ function likeComment(el) {
   const isLiked = el.classList.contains('liked');
   const n = parseInt(el.textContent.match(/\d+/)[0]) || 0;
   if(isLiked) {
-    // Unlike
+
     el.classList.remove('liked');
     el.style.color = '';
     el.textContent = '❤️ ' + (n - 1);
   } else {
-    // Like
+
     el.classList.add('liked');
     el.style.color = 'var(--error)';
     el.textContent = '❤️ ' + (n + 1);
@@ -1539,7 +1533,7 @@ async function submitComment(postId) {
   } catch { showToast('Could not post comment. Is server running?'); }
 }
 
-// ===== REVIEWS =====
+
 let userRating=5;
 function setRating(r) {
   userRating=r;
@@ -1623,7 +1617,7 @@ async function submitReview() {
   } catch { showToast('Could not submit review. Is server running?'); }
 }
 
-// ===== PDF RESOURCES =====
+
 const samplePDFs = [
   { id:1, title:"UPI Beginner's Guide", description:"Complete step-by-step guide for first-time UPI users in rural India. Covers setup, payments, and safety.", category:"upi", file_url:"#", pages:24, size_mb:2.4, downloads:1842, color:"#E8F5E9", icon:"📱" },
   { id:2, title:"Fraud Prevention Handbook", description:"Identify and avoid the most common UPI scams. Includes real case studies from rural Maharashtra.", category:"fraud", file_url:"#", pages:36, size_mb:3.1, downloads:2561, color:"#FFEBEE", icon:"🛡️" },
@@ -1715,8 +1709,7 @@ function downloadPDF(title, url) {
   else { showToast(`📄 Downloading "${title}"... (Add file URL in DB)`); }
 }
 
-// ===== INIT =====
-// ===== HOME PAGE STATS — fetches from existing APIs =====
+
 async function loadHomeStats() {
   const fmt = n => {
     if(n === 0) return '0';
@@ -1729,7 +1722,7 @@ async function loadHomeStats() {
   };
 
   try {
-    // Fetch all in parallel using existing routes
+
     const [postsRes, surveysRes, programsRes] = await Promise.all([
       fetch(`${API}/posts`),
       fetch(`${API}/dashboard`),
@@ -1740,12 +1733,8 @@ async function loadHomeStats() {
     const dash     = surveysRes.ok  ? await surveysRes.json()  : {};
     const programs = programsRes.ok ? await programsRes.json() : [];
 
-    // Members = unique user_ids who posted (approximation)
     const uniqueUsers = new Set(posts.map(p => p.user_id)).size;
-    // Surveys = from dashboard total_responses
     const surveys = dash.total_responses || 0;
-    // Certs = we don't have a direct route, use posts as proxy for active users
-    // Programs = count of programs
     const programCount = programs.length;
 
     set('home-stat-members', uniqueUsers || posts.length || 0);
@@ -1753,7 +1742,7 @@ async function loadHomeStats() {
     set('home-stat-certs', 0); // Will update when /api/home/stats is available
     set('home-stat-programs', programCount);
 
-    // Try the dedicated stats route if available
+
     try {
       const statsRes = await fetch(`${API}/home/stats`);
       if(statsRes.ok) {
@@ -1766,15 +1755,13 @@ async function loadHomeStats() {
     } catch {} // Silently ignore if route doesn't exist yet
 
   } catch(e) {
-    // Server not reachable — show dashes
+
     ['home-stat-members','home-stat-surveys','home-stat-certs','home-stat-programs']
       .forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '—'; });
   }
 }
 
-// Init immediately since this script is loaded after React renders the DOM
 (function() {
-  // Close program modal on Escape key
   document.addEventListener('keydown', e => {
     if(e.key === 'Escape') closeProgramModal(null, true);
   });

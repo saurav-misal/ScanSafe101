@@ -20,7 +20,6 @@ import './intro-animations.css';
 
 export default function App() {
   useEffect(() => {
-    // Load scripts sequentially so script.js has access to the DOM
     const loadScript = (src) => {
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
@@ -31,7 +30,6 @@ export default function App() {
       });
     };
 
-    // Small delay to ensure React has fully rendered DOM
     setTimeout(async () => {
       try {
         await loadScript('/script.js');
@@ -44,7 +42,6 @@ export default function App() {
 
   return (
     <>
-      {/* Program Detail Modal */}
       <div className="prog-modal-overlay" id="prog-detail-modal" onClick={(e) => window.closeProgramModal && window.closeProgramModal(e)}>
         <div className="prog-modal" id="prog-modal-inner">
           <div className="prog-modal-header">
@@ -72,11 +69,9 @@ export default function App() {
 
       <Navbar />
 
-      {/* Mobile Sidebar Overlay */}
       <div className="sidebar-overlay" id="sidebar-overlay" onClick={() => window.closeSidebar && window.closeSidebar()}></div>
       <Sidebar />
 
-      {/* Dark Theme Toggle */}
       <button className="theme-toggle-float" onClick={() => window.toggleTheme && window.toggleTheme()} title="Toggle Dark Mode" id="theme-btn">🌙</button>
 
       <PageHome />

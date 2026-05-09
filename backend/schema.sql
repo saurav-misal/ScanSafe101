@@ -1,12 +1,6 @@
--- =============================================
--- ScanSafe – PostgreSQL Schema + Seed Data
--- =============================================
--- Usage:
---   1. CREATE DATABASE scansafe;
---   2. psql -U postgres -d scansafe -f schema.sql
--- =============================================
+-- ScanSafe - PostgreSQL Schema + Seed Data
+-- Run: psql -U postgres -d scansafe -f schema.sql
 
--- ── Users ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(120) NOT NULL,
@@ -22,7 +16,6 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── Programs ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS programs (
     id SERIAL PRIMARY KEY,
     host_user_id INTEGER REFERENCES users(id),
@@ -39,7 +32,6 @@ CREATE TABLE IF NOT EXISTS programs (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── Surveys ──────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS surveys (
     id SERIAL PRIMARY KEY,
     participant_name VARCHAR(120),
@@ -60,7 +52,6 @@ CREATE TABLE IF NOT EXISTS surveys (
     submitted_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── Quiz Questions ───────────────────────────────────────
 CREATE TABLE IF NOT EXISTS quiz_questions (
     id SERIAL PRIMARY KEY,
     question_text TEXT NOT NULL,
@@ -73,7 +64,6 @@ CREATE TABLE IF NOT EXISTS quiz_questions (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── Quiz Attempts ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS quiz_attempts (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
@@ -84,7 +74,6 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
     attempted_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── Posts ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS posts (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
@@ -94,7 +83,6 @@ CREATE TABLE IF NOT EXISTS posts (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── Post Likes ───────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS post_likes (
     id SERIAL PRIMARY KEY,
     post_id INTEGER REFERENCES posts(id),
@@ -103,7 +91,6 @@ CREATE TABLE IF NOT EXISTS post_likes (
     UNIQUE(post_id, user_id)
 );
 
--- ── Comments ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS comments (
     id SERIAL PRIMARY KEY,
     post_id INTEGER REFERENCES posts(id),
@@ -113,7 +100,6 @@ CREATE TABLE IF NOT EXISTS comments (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── Comment Likes ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS comment_likes (
     id SERIAL PRIMARY KEY,
     comment_id INTEGER REFERENCES comments(id),
@@ -122,7 +108,6 @@ CREATE TABLE IF NOT EXISTS comment_likes (
     UNIQUE(comment_id, user_id)
 );
 
--- ── Reviews ──────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
@@ -131,7 +116,6 @@ CREATE TABLE IF NOT EXISTS reviews (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── NGOs ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS ngos (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -143,7 +127,6 @@ CREATE TABLE IF NOT EXISTS ngos (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── UPI App Steps ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS upi_app_steps (
     id SERIAL PRIMARY KEY,
     app_name VARCHAR(20) NOT NULL,
@@ -153,7 +136,6 @@ CREATE TABLE IF NOT EXISTS upi_app_steps (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── Video Tutorials ──────────────────────────────────────
 CREATE TABLE IF NOT EXISTS video_tutorials (
     id SERIAL PRIMARY KEY,
     app_name VARCHAR(20) NOT NULL,
@@ -165,7 +147,6 @@ CREATE TABLE IF NOT EXISTS video_tutorials (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── Digital Literacy PDFs ────────────────────────────────
 CREATE TABLE IF NOT EXISTS digital_literacy_pdfs (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -181,11 +162,8 @@ CREATE TABLE IF NOT EXISTS digital_literacy_pdfs (
 );
 
 
--- ══════════════════════════════════════════════════════════
--- SEED DATA (Sample / Demo)
--- ══════════════════════════════════════════════════════════
+-- Sample data
 
--- Programs (sample awareness events)
 INSERT INTO programs (name, description, event_date, event_time, venue, is_free, price_amount, contact_phone, contact_email) VALUES
 ('UPI Safety Workshop', 'Learn to identify fraud and use UPI safely in rural areas.', '2024-04-10', '10:00', 'Community Hall, Nashik', true, 0, '+91 98765 43210', 'workshop@scansafe.in'),
 ('Digital Payment Drive', 'Hands-on session for shopkeepers on accepting UPI payments.', '2024-04-15', '14:00', 'Market Square, Pune', false, 0, '+91 87654 32109', 'digitalpay@gmail.com'),
@@ -193,7 +171,6 @@ INSERT INTO programs (name, description, event_date, event_time, venue, is_free,
 ('Women & Digital Finance', 'Special session for rural women on mobile banking safety.', '2024-04-25', '09:00', 'Women Center, Aurangabad', true, 0, '+91 65432 10987', 'women@finance.in'),
 ('Senior Citizens UPI Help', 'Special workshop for elderly people to learn UPI safely.', '2024-05-05', '15:00', 'Senior Center, Nagpur', true, 0, '+91 43210 98765', 'seniors@upi.in');
 
--- Quiz Questions (20 fraud-awareness questions)
 INSERT INTO quiz_questions (question_text, option_a, option_b, option_c, option_d, correct_option, difficulty) VALUES
 ('What does UPI stand for?', 'Universal Payment Interface', 'Unified Payment Interface', 'United Payment Interface', 'Unified Public Interface', 'b', 'easy'),
 ('Which government body developed BHIM UPI?', 'Reserve Bank of India (RBI)', 'State Bank of India (SBI)', 'National Payments Corporation of India (NPCI)', 'Ministry of Finance', 'c', 'easy'),
@@ -216,7 +193,6 @@ INSERT INTO quiz_questions (question_text, option_a, option_b, option_c, option_
 ('Best protection from UPI fraud:', 'Never use UPI', 'Share PIN only with family', 'Change PIN regularly, never share, verify requests, use official apps', 'Always screen share with support', 'c', 'hard'),
 ('Fraudster uses fake UPI ID like "sbi.care@upi". What to check?', 'Name displayed before confirming is real bank', 'UPI ID has "care" or "help"', 'Fraudster knows your name', 'Amount is small so safe', 'a', 'hard');
 
--- NGOs (sample organizations)
 INSERT INTO ngos (name, description, upi_id, website_url) VALUES
 ('Digital Shakti Foundation', 'Empowering rural women with digital literacy across Maharashtra.', 'digitalshakti@upi', 'https://digitalshakti.org'),
 ('Gram Vikas Digital Trust', 'Bringing UPI adoption to 500+ villages through workshops.', 'gramvikas@upi', 'https://gramvikas.org'),
@@ -224,7 +200,6 @@ INSERT INTO ngos (name, description, upi_id, website_url) VALUES
 ('SurakshaDigi NGO', 'Protecting rural users from digital payment fraud.', 'suraksha@upi', 'https://suraksha.ngo'),
 ('Pratham Education Foundation', 'India''s largest education NGO. Digital literacy programs across 21 states.', 'pratham@upi', 'https://www.pratham.org');
 
--- UPI App Steps (PhonePe pay example)
 INSERT INTO upi_app_steps (app_name, operation, step_number, step_text) VALUES
 ('PhonePe', 'pay', 1, 'Open PhonePe app on your phone.'),
 ('PhonePe', 'pay', 2, 'Tap "Send Money" on the home screen.'),
@@ -253,14 +228,9 @@ INSERT INTO upi_app_steps (app_name, operation, step_number, step_text) VALUES
 ('Google Pay', 'pay', 5, 'Tap "Pay" and enter your UPI PIN.'),
 ('Google Pay', 'pay', 6, 'Wait for "Paid" confirmation in the app.');
 
--- Digital Literacy PDFs (sample resources)
 INSERT INTO digital_literacy_pdfs (title, description, category, file_url, pages, size_mb, downloads) VALUES
 ('UPI Beginner Guide', 'Complete step-by-step guide for first-time UPI users in rural India.', 'upi', '/pdfs/upi-beginner.pdf', 24, 2.4, 1842),
 ('Fraud Prevention Handbook', 'Identify and avoid the most common UPI scams with real case studies.', 'fraud', '/pdfs/fraud-prevention.pdf', 36, 3.1, 2561),
 ('Digital Banking for Farmers', 'How farmers can use mobile banking for subsidies and benefit transfers.', 'banking', '/pdfs/banking-farmers.pdf', 18, 1.8, 934),
 ('QR Code Safety Guide', 'Learn to distinguish real QR codes from fake ones.', 'fraud', '/pdfs/qr-safety.pdf', 12, 0.9, 3102),
 ('Women & Digital Finance', 'Empowering rural women with digital payment tools.', 'literacy', '/pdfs/women-finance.pdf', 28, 2.7, 1455);
-
--- ══════════════════════════════════════════════════════════
--- Done! Register a user via the app to start using ScanSafe.
--- ══════════════════════════════════════════════════════════

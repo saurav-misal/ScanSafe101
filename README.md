@@ -2,7 +2,7 @@
   <img src="frontend/public/assets/logo.png" alt="ScanSafe Logo" width="80" />
 </p>
 
-<h1 align="center">ScanSafe – Be Safe 🛡️</h1>
+<h1 align="center">ScanSafe - Be Safe</h1>
 
 <p align="center">
   <strong>Empowering Rural India with Digital Payments</strong><br/>
@@ -21,42 +21,42 @@
 
 ---
 
-## ✨ Highlights
+## Highlights
 
-- **8 interactive pages** — Home, Programs, Survey, Dashboard, Learn, Quiz, Try UPI, Community
-- **Real-time analytics** — Chart.js dashboards powered by live PostgreSQL survey data
-- **Fraud awareness quiz** — 20-question certification with downloadable PDF certificate
-- **UPI payment simulator** — Safe sandbox to practice digital payments
-- **Community hub** — Social feed with posts, comments, likes & reviews
-- **AI chatbot** — Built-in diagnostic assistant for fraud-related queries
-- **Dark mode** — Full theme toggle across the entire UI
-- **JWT authentication** — Secure registration, login, and profile management
+- 8 interactive pages -- Home, Programs, Survey, Dashboard, Learn, Quiz, Try UPI, Community
+- Real-time analytics with Chart.js dashboards powered by live PostgreSQL survey data
+- Fraud awareness quiz with 20-question certification and downloadable PDF certificate
+- UPI payment simulator for practicing digital payments in a safe sandbox
+- Community hub with posts, comments, likes & reviews
+- Built-in AI chatbot for fraud-related queries
+- Dark mode toggle across the entire UI
+- JWT authentication for registration, login, and profile management
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |:------|:-----------|
-| **Frontend** | React 19, Vite 8, Chart.js, Vanilla CSS |
-| **Backend** | Node.js, Express 5 |
-| **Database** | PostgreSQL 15+ |
-| **Auth** | JWT (jsonwebtoken) + bcryptjs |
-| **AI** | OpenRouter API (GPT integration) |
+| Frontend | React 19, Vite 8, Chart.js, Vanilla CSS |
+| Backend | Node.js, Express 5 |
+| Database | PostgreSQL 15+ |
+| Auth | JWT (jsonwebtoken) + bcryptjs |
+| AI | OpenRouter API (GPT integration) |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 scansafe/
-├── backend/                    # Node.js REST API
+├── backend/
 │   ├── server.js               # Express routes & middleware
 │   ├── schema.sql              # DB schema + sample seed data
 │   ├── package.json
-│   └── .env.example            # Environment variable template
+│   └── .env.example
 │
-├── frontend/                   # React (Vite) SPA
+├── frontend/
 │   ├── public/
 │   │   ├── assets/             # Images, icons, logos
 │   │   ├── script.js           # Legacy application logic
@@ -64,10 +64,10 @@ scansafe/
 │   ├── src/
 │   │   ├── components/         # Navbar, Sidebar, Footer, Modals, Chatbot
 │   │   ├── pages/              # 8 page components
-│   │   ├── styles.css          # Design system & global styles
-│   │   ├── App.jsx             # Root component
-│   │   └── main.jsx            # Entry point
-│   ├── vite.config.js          # Vite config with API proxy
+│   │   ├── styles.css          # Global styles
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── vite.config.js
 │   ├── package.json
 │   └── .env.example
 │
@@ -77,7 +77,7 @@ scansafe/
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -97,17 +97,13 @@ cd ScanSafe-frontend
 ### 2. Set Up the Database
 
 ```bash
-# Create the database
 psql -U postgres -c "CREATE DATABASE scansafe;"
-
-# Import schema and seed data
 psql -U postgres -d scansafe -f backend/schema.sql
 ```
 
 ### 3. Configure Environment Variables
 
 ```bash
-# Copy the template
 cp backend/.env.example backend/.env
 ```
 
@@ -135,140 +131,111 @@ cd ../frontend && npm install
 
 ### 5. Start the Application
 
-**Terminal 1 — Backend API:**
+Terminal 1 -- Backend:
 ```bash
 cd backend
 npm start
-# ✅ http://localhost:5000
+# runs on http://localhost:5000
 ```
 
-**Terminal 2 — Frontend Dev Server:**
+Terminal 2 -- Frontend:
 ```bash
 cd frontend
 npm run dev
-# ✅ http://localhost:5173
+# runs on http://localhost:5173
 ```
 
-> The Vite dev server proxies `/api` requests to the backend automatically.
+The Vite dev server proxies `/api` requests to the backend automatically.
 
-Open **http://localhost:5173** in your browser 🎉
+Open http://localhost:5173 in your browser.
 
 ---
 
-## 🌐 API Reference
+## API Reference
 
 ### Authentication
 | Method | Endpoint | Auth | Description |
 |:-------|:---------|:----:|:------------|
-| `POST` | `/api/auth/register` | ✗ | Create account |
-| `POST` | `/api/auth/login` | ✗ | Login & get JWT |
-| `GET` | `/api/auth/me` | ✓ | Current user profile |
-| `PUT` | `/api/auth/profile` | ✓ | Update profile |
+| POST | `/api/auth/register` | No | Create account |
+| POST | `/api/auth/login` | No | Login & get JWT |
+| GET | `/api/auth/me` | Yes | Current user profile |
+| PUT | `/api/auth/profile` | Yes | Update profile |
 
 ### Platform
 | Method | Endpoint | Auth | Description |
 |:-------|:---------|:----:|:------------|
-| `GET` | `/api/programs` | ✗ | List awareness programs |
-| `POST` | `/api/programs` | ✓ | Host a new program |
-| `POST` | `/api/survey` | ✗ | Submit UPI survey |
-| `GET` | `/api/dashboard` | ✗ | Dashboard analytics |
-| `GET` | `/api/home/stats` | ✗ | Home page statistics |
+| GET | `/api/programs` | No | List awareness programs |
+| POST | `/api/programs` | Yes | Host a new program |
+| POST | `/api/survey` | No | Submit UPI survey |
+| GET | `/api/dashboard` | No | Dashboard analytics |
+| GET | `/api/home/stats` | No | Home page statistics |
 
 ### Learning
 | Method | Endpoint | Auth | Description |
 |:-------|:---------|:----:|:------------|
-| `GET` | `/api/learn/steps` | ✗ | UPI app step guides |
-| `GET` | `/api/learn/videos` | ✗ | Video tutorials |
-| `GET` | `/api/learn/pdfs` | ✗ | PDF resources |
-| `GET` | `/api/quiz/questions` | ✗ | Random 20 questions |
-| `POST` | `/api/quiz/submit` | ✓ | Submit quiz for certificate |
+| GET | `/api/learn/steps` | No | UPI app step guides |
+| GET | `/api/learn/videos` | No | Video tutorials |
+| GET | `/api/learn/pdfs` | No | PDF resources |
+| GET | `/api/quiz/questions` | No | Random 20 questions |
+| POST | `/api/quiz/submit` | Yes | Submit quiz for certificate |
 
 ### Community
 | Method | Endpoint | Auth | Description |
 |:-------|:---------|:----:|:------------|
-| `GET` | `/api/posts` | ✗ | Community feed |
-| `POST` | `/api/posts` | ✓ | Create post |
-| `POST` | `/api/posts/:id/like` | ✓ | Toggle like |
-| `POST` | `/api/posts/:id/comments` | ✓ | Add comment |
-| `GET/POST` | `/api/reviews` | ✗/✓ | Website reviews |
-| `GET` | `/api/ngos` | ✗ | NGO directory |
+| GET | `/api/posts` | No | Community feed |
+| POST | `/api/posts` | Yes | Create post |
+| POST | `/api/posts/:id/like` | Yes | Toggle like |
+| POST | `/api/posts/:id/comments` | Yes | Add comment |
+| GET/POST | `/api/reviews` | No/Yes | Website reviews |
+| GET | `/api/ngos` | No | NGO directory |
 
 ---
 
-## 🗄️ Database Schema
+## Database Schema
 
 | Table | Description |
 |:------|:------------|
-| `users` | Accounts with auth, profile & quiz status |
-| `programs` | Awareness programs with host info |
-| `surveys` | 15-field UPI usage survey responses |
-| `quiz_questions` | Fraud awareness questions |
-| `quiz_attempts` | User quiz attempt history |
-| `posts` | Community feed posts |
-| `comments` | Post comments |
-| `post_likes` / `comment_likes` | Like tracking |
-| `reviews` | Website reviews with ratings |
-| `ngos` | NGO directory for donations |
-| `upi_app_steps` | Step-by-step UPI app guides |
-| `video_tutorials` | Video tutorial links |
-| `digital_literacy_pdfs` | Downloadable PDF resources |
+| users | Accounts with auth, profile & quiz status |
+| programs | Awareness programs with host info |
+| surveys | 15-field UPI usage survey responses |
+| quiz_questions | Fraud awareness questions |
+| quiz_attempts | User quiz attempt history |
+| posts | Community feed posts |
+| comments | Post comments |
+| post_likes / comment_likes | Like tracking |
+| reviews | Website reviews with ratings |
+| ngos | NGO directory for donations |
+| upi_app_steps | Step-by-step UPI app guides |
+| video_tutorials | Video tutorial links |
+| digital_literacy_pdfs | Downloadable PDF resources |
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
 ### Backend (`backend/.env`)
 
 | Variable | Description | Required |
 |:---------|:------------|:--------:|
-| `DB_HOST` | PostgreSQL host | ✓ |
-| `DB_PORT` | PostgreSQL port (default: 5432) | ✓ |
-| `DB_NAME` | Database name | ✓ |
-| `DB_USER` | Database user | ✓ |
-| `DB_PASSWORD` | Database password | ✓ |
-| `JWT_SECRET` | Secret for JWT token signing | ✓ |
-| `PORT` | Server port (default: 5000) | ✗ |
+| DB_HOST | PostgreSQL host | Yes |
+| DB_PORT | PostgreSQL port (default: 5432) | Yes |
+| DB_NAME | Database name | Yes |
+| DB_USER | Database user | Yes |
+| DB_PASSWORD | Database password | Yes |
+| JWT_SECRET | Secret for JWT token signing | Yes |
+| PORT | Server port (default: 5000) | No |
 
 ### Frontend (`frontend/.env`)
 
 | Variable | Description | Required |
 |:---------|:------------|:--------:|
-| `VITE_API_URL` | Backend API URL (production only) | ✗ |
+| VITE_API_URL | Backend API URL (production only) | No |
 
-> During development, the Vite proxy handles API routing automatically.
-
----
-
-## 🚢 Deployment
-
-### Render (Recommended)
-
-**Backend** → Web Service
-- Root directory: `backend`
-- Build: `npm install`
-- Start: `node server.js`
-- Add env variables from `.env.example`
-
-**Frontend** → Static Site
-- Root directory: `frontend`
-- Build: `npm install && npm run build`
-- Publish: `dist`
-
-**Database** → PostgreSQL on Render, import `schema.sql`
-
-### Vercel (Frontend) + Railway (Backend)
-
-```bash
-# Frontend on Vercel
-cd frontend && npx vercel --prod
-
-# Backend on Railway
-cd backend && railway up
-```
+During development, the Vite proxy handles API routing automatically.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/your-feature`
@@ -278,12 +245,12 @@ cd backend && railway up
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **ISC License**.
 
 ---
 
 <p align="center">
-  Made with ❤️ for Digital India 🇮🇳
+  Made for Digital India
 </p>

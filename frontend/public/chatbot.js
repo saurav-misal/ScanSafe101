@@ -1,7 +1,4 @@
 (function () {
-  /* ─── OpenRouter API Configuration ─── */
-  // Set your API key in backend/.env as OPENROUTER_API_KEY
-  // For local dev, you can temporarily set it here (DO NOT commit real keys)
   const API_KEY = window.OPENROUTER_API_KEY || "";
   const API_URL = "https://openrouter.ai/api/v1/chat/completions";
   const MODEL = "openai/gpt-oss-120b:free";
@@ -17,7 +14,6 @@ Your role:
   let msgs = [
     { role: "bot", txt: "Connection established. I am an automated support system programmed to verify queries regarding digital transaction protocols. State your inquiry parameter." }
   ];
-  /* Conversation history for API context */
   let apiHistory = [];
   let isTyping = false;
 
@@ -121,7 +117,6 @@ Your role:
     scrollToBottom();
   }
 
-  /* ─── Open / Close helpers ─── */
   function openChat() {
     const chatBtn = document.getElementById("chat-btn");
     const chatbot = document.getElementById("chatbot");
@@ -140,7 +135,6 @@ Your role:
     if (backdrop) backdrop.classList.remove("show");
   }
 
-  /* ─── Create backdrop overlay element ─── */
   function createBackdrop() {
     if (document.getElementById("chatbot-backdrop")) return;
     const overlay = document.createElement("div");
@@ -157,46 +151,37 @@ Your role:
     const messagesEl = document.getElementById("chat-messages");
     const quickReplies = document.querySelectorAll(".qr");
 
-    /* Create backdrop for outside-click-to-close */
     createBackdrop();
     const backdrop = document.getElementById("chatbot-backdrop");
 
-    /* Render initial message */
     messagesEl.appendChild(createMsgEl("bot", msgs[0].txt));
 
-    /* ─── Open chat ─── */
     chatBtn.addEventListener("click", function (e) {
       e.stopPropagation();
       openChat();
     });
 
-    /* ─── Close via ✕ button ─── */
     closeBtn.addEventListener("click", function (e) {
       e.stopPropagation();
       closeChat();
     });
 
-    /* ─── Close via backdrop click ─── */
     if (backdrop) {
       backdrop.addEventListener("click", function () {
         closeChat();
       });
     }
 
-    /* ─── Close via outside click (fallback / extra safety) ─── */
     document.addEventListener("click", function (e) {
       if (!chatbot.classList.contains("open")) return;
-      /* Click is inside chat widget or the toggle button — do nothing */
       if (chatbot.contains(e.target) || chatBtn.contains(e.target)) return;
       closeChat();
     });
 
-    /* ─── Prevent clicks inside chatbot from propagating to document ─── */
     chatbot.addEventListener("click", function (e) {
       e.stopPropagation();
     });
 
-    /* ─── Send message ─── */
     sendBtn.addEventListener("click", function () {
       handleSend();
     });

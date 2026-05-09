@@ -1,9 +1,3 @@
-// =============================================
-// ScanSafe – Node.js + Express Backend API
-// =============================================
-// Install: npm install express pg bcryptjs jsonwebtoken cors dotenv
-// Run: node server.js
-
 const express = require('express');
 const path    = require('path');
 const { Pool } = require('pg');
@@ -15,11 +9,8 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
-
-// Serve frontend
 app.use(express.static(path.join(__dirname, 'frontend')));
 
-// ── DB Connection ─────────────────────────────────────────────
 const pool = new Pool({
   host:     process.env.DB_HOST     || 'localhost',
   port:     process.env.DB_PORT     || 5432,
@@ -28,7 +19,6 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || 123,
 });
 
-// ── Auth Middleware ───────────────────────────────────────────
 function auth(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Login required' });
@@ -40,11 +30,8 @@ function auth(req, res, next) {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
-// AUTH ROUTES
-// ══════════════════════════════════════════════════════════════
+// --- Auth ---
 
-// POST /api/auth/register
 app.post('/api/auth/register', async (req, res) => {
   const { full_name, email, password, phone } = req.body;
   if (!full_name || !email || !password)
@@ -65,7 +52,6 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-// POST /api/auth/login
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
@@ -82,7 +68,6 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// GET /api/auth/me
 app.get('/api/auth/me', auth, async (req, res) => {
   const result = await pool.query(
     'SELECT id,full_name,email,phone,dob,location,profile_pic_url,quiz_status,quiz_score,created_at FROM users WHERE id=$1',
@@ -91,7 +76,6 @@ app.get('/api/auth/me', auth, async (req, res) => {
   res.json(result.rows[0]);
 });
 
-// PUT /api/auth/profile
 app.put('/api/auth/profile', auth, async (req, res) => {
   const { full_name, phone, dob, location, profile_pic_url } = req.body;
   await pool.query(
@@ -105,11 +89,8 @@ app.put('/api/auth/profile', auth, async (req, res) => {
   res.json({ message: 'Profile updated', user: result.rows[0] });
 });
 
-// ══════════════════════════════════════════════════════════════
-// PROGRAMS
-// ══════════════════════════════════════════════════════════════
+// --- Programs ---
 
-// GET /api/programs
 app.get('/api/programs', async (req, res) => {
   const { search, type } = req.query;
   let query = `SELECT p.*, u.full_name as host_name FROM programs p
@@ -123,7 +104,6 @@ app.get('/api/programs', async (req, res) => {
   res.json(result.rows);
 });
 
-// POST /api/programs
 app.post('/api/programs', auth, async (req, res) => {
   const { name, description, event_date, event_time, venue, is_free, price_amount, contact_phone, contact_email } = req.body;
   if (!name || !event_date || !event_time || !venue)
@@ -136,11 +116,8 @@ app.post('/api/programs', auth, async (req, res) => {
   res.status(201).json(result.rows[0]);
 });
 
-// ══════════════════════════════════════════════════════════════
-// SURVEY
-// ══════════════════════════════════════════════════════════════
+// --- Survey ---
 
-// POST /api/survey
 app.post('/api/survey', async (req, res) => {
   const {
     participant_name, age, gender, occupation, accepts_upi, upi_apps_used,
@@ -162,11 +139,8 @@ app.post('/api/survey', async (req, res) => {
   res.status(201).json({ message: 'Survey submitted successfully', id: result.rows[0].id });
 });
 
-// ══════════════════════════════════════════════════════════════
-// HOME PAGE STATS — Real counts from DB
-// ══════════════════════════════════════════════════════════════
+// --- Home Stats ---
 
-// GET /api/home/stats
 app.get('/api/home/stats', async (req, res) => {
   try {
     const [members, surveys, certs, programs] = await Promise.all([
@@ -186,11 +160,8 @@ app.get('/api/home/stats', async (req, res) => {
   }
 });
 
-// ══════════════════════════════════════════════════════════════
-// DASHBOARD — Live chart data from survey responses
-// ══════════════════════════════════════════════════════════════
+// --- Dashboard ---
 
-// GET /api/dashboard
 app.get('/api/dashboard', async (req, res) => {
   const [total, upiAccept, cashVsUpi, apps, ageGroup, problems, prefs] = await Promise.all([
     pool.query('SELECT COUNT(*) FROM surveys'),
@@ -212,11 +183,8 @@ app.get('/api/dashboard', async (req, res) => {
   });
 });
 
-// ══════════════════════════════════════════════════════════════
-// LEARN
-// ══════════════════════════════════════════════════════════════
+// --- Learn ---
 
-// GET /api/learn/steps?app=PhonePe&operation=pay
 app.get('/api/learn/steps', async (req, res) => {
   const { app, operation } = req.query;
   const result = await pool.query(
@@ -226,7 +194,6 @@ app.get('/api/learn/steps', async (req, res) => {
   res.json(result.rows);
 });
 
-// GET /api/learn/videos?app=PhonePe&operation=pay
 app.get('/api/learn/videos', async (req, res) => {
   const { app, operation } = req.query;
   let query = 'SELECT * FROM video_tutorials WHERE 1=1';
@@ -238,7 +205,6 @@ app.get('/api/learn/videos', async (req, res) => {
   res.json(result.rows);
 });
 
-// GET /api/learn/pdfs
 app.get('/api/learn/pdfs', async (req, res) => {
   try {
     const result = await pool.query(
@@ -250,11 +216,8 @@ app.get('/api/learn/pdfs', async (req, res) => {
   }
 });
 
-// ══════════════════════════════════════════════════════════════
-// QUIZ
-// ══════════════════════════════════════════════════════════════
+// --- Quiz ---
 
-// GET /api/quiz/questions
 app.get('/api/quiz/questions', async (req, res) => {
   const result = await pool.query(
     'SELECT id,question_text,option_a,option_b,option_c,option_d,correct_option FROM quiz_questions ORDER BY RANDOM() LIMIT 20'
@@ -262,20 +225,18 @@ app.get('/api/quiz/questions', async (req, res) => {
   res.json(result.rows);
 });
 
-// POST /api/quiz/submit
 app.post('/api/quiz/submit', auth, async (req, res) => {
   const { score, total_questions } = req.body;
   const pct    = parseFloat(((score / total_questions) * 100).toFixed(2));
   const passed = pct >= 75;
   const status = passed ? 'certified' : 'attempted';
 
-  // Save attempt
   await pool.query(
     'INSERT INTO quiz_attempts (user_id,score,total_questions,percentage,passed) VALUES ($1,$2,$3,$4,$5)',
     [req.user.id, score, total_questions, pct, passed]
   );
 
-  // Update user — only upgrade status (never downgrade certified to attempted)
+  // only upgrade status, never downgrade certified -> attempted
   await pool.query(
     `UPDATE users SET quiz_score=$1,
      quiz_status = CASE
@@ -288,7 +249,6 @@ app.post('/api/quiz/submit', auth, async (req, res) => {
     [score, status, req.user.id]
   );
 
-  // Return updated user
   const updated = await pool.query(
     'SELECT id,full_name,email,phone,dob,location,profile_pic_url,quiz_status,quiz_score FROM users WHERE id=$1',
     [req.user.id]
@@ -296,27 +256,20 @@ app.post('/api/quiz/submit', auth, async (req, res) => {
   res.json({ passed, percentage: pct, status, user: updated.rows[0] });
 });
 
-// ══════════════════════════════════════════════════════════════
-// NGOs
-// ══════════════════════════════════════════════════════════════
+// --- NGOs ---
 
-// GET /api/ngos/random
 app.get('/api/ngos/random', async (req, res) => {
   const result = await pool.query('SELECT * FROM ngos WHERE is_active=true ORDER BY RANDOM() LIMIT 1');
   res.json(result.rows[0] || {});
 });
 
-// GET /api/ngos
 app.get('/api/ngos', async (req, res) => {
   const result = await pool.query('SELECT * FROM ngos WHERE is_active=true ORDER BY name');
   res.json(result.rows);
 });
 
-// ══════════════════════════════════════════════════════════════
-// COMMUNITY — POSTS
-// ══════════════════════════════════════════════════════════════
+// --- Posts ---
 
-// GET /api/posts?search=keyword
 app.get('/api/posts', async (req, res) => {
   const { search } = req.query;
   let query = `SELECT p.*, u.full_name, u.profile_pic_url, u.quiz_status,
@@ -332,7 +285,6 @@ app.get('/api/posts', async (req, res) => {
   res.json(result.rows);
 });
 
-// POST /api/posts
 app.post('/api/posts', auth, async (req, res) => {
   const { content } = req.body;
   if (!content) return res.status(400).json({ error: 'Content is required' });
@@ -343,7 +295,6 @@ app.post('/api/posts', auth, async (req, res) => {
   res.status(201).json(result.rows[0]);
 });
 
-// PUT /api/posts/:id
 app.put('/api/posts/:id', auth, async (req, res) => {
   const { content } = req.body;
   const result = await pool.query(
@@ -354,13 +305,11 @@ app.put('/api/posts/:id', auth, async (req, res) => {
   res.json(result.rows[0]);
 });
 
-// DELETE /api/posts/:id
 app.delete('/api/posts/:id', auth, async (req, res) => {
   await pool.query('DELETE FROM posts WHERE id=$1 AND user_id=$2', [req.params.id, req.user.id]);
   res.json({ message: 'Post deleted' });
 });
 
-// POST /api/posts/:id/like  (toggle like)
 app.post('/api/posts/:id/like', auth, async (req, res) => {
   const postId = req.params.id;
   try {
@@ -368,18 +317,14 @@ app.post('/api/posts/:id/like', auth, async (req, res) => {
     await pool.query('UPDATE posts SET likes_count=likes_count+1 WHERE id=$1', [postId]);
     res.json({ liked: true });
   } catch {
-    // Already liked — unlike
     await pool.query('DELETE FROM post_likes WHERE post_id=$1 AND user_id=$2', [postId, req.user.id]);
     await pool.query('UPDATE posts SET likes_count=GREATEST(likes_count-1,0) WHERE id=$1', [postId]);
     res.json({ liked: false });
   }
 });
 
-// ══════════════════════════════════════════════════════════════
-// COMMENTS
-// ══════════════════════════════════════════════════════════════
+// --- Comments ---
 
-// GET /api/comments/mine — get all comments by logged in user
 app.get('/api/comments/mine', auth, async (req, res) => {
   const result = await pool.query(
     'SELECT COUNT(*) as total FROM comments WHERE user_id=$1',
@@ -388,16 +333,11 @@ app.get('/api/comments/mine', auth, async (req, res) => {
   res.json({ total: parseInt(result.rows[0].total) });
 });
 
-// GET /api/users/stats — get all stats for logged in user in one call
 app.get('/api/users/stats', auth, async (req, res) => {
   const [posts, comments, programs, likes] = await Promise.all([
-    // Total posts by user
     pool.query('SELECT COUNT(*) as total FROM posts WHERE user_id=$1', [req.user.id]),
-    // Total comments by user
     pool.query('SELECT COUNT(*) as total FROM comments WHERE user_id=$1', [req.user.id]),
-    // Programs hosted by user
     pool.query('SELECT COUNT(*) as total FROM programs WHERE host_user_id=$1', [req.user.id]),
-    // Total likes received on user posts
     pool.query('SELECT COALESCE(SUM(likes_count),0) as total FROM posts WHERE user_id=$1', [req.user.id]),
   ]);
   res.json({
@@ -405,12 +345,11 @@ app.get('/api/users/stats', auth, async (req, res) => {
     comments:         parseInt(comments.rows[0].total),
     programs_hosted:  parseInt(programs.rows[0].total),
     total_likes:      parseInt(likes.rows[0].total),
-    replies:          parseInt(comments.rows[0].total), // replies stored as comments
-    attended:         0, // no attendance table yet
+    replies:          parseInt(comments.rows[0].total),
+    attended:         0,
   });
 });
 
-// GET /api/posts/:id/comments
 app.get('/api/posts/:id/comments', async (req, res) => {
   const result = await pool.query(
     `SELECT c.*, u.full_name, u.profile_pic_url, u.quiz_status
@@ -421,7 +360,6 @@ app.get('/api/posts/:id/comments', async (req, res) => {
   res.json(result.rows);
 });
 
-// POST /api/posts/:id/comments
 app.post('/api/posts/:id/comments', auth, async (req, res) => {
   const { content } = req.body;
   if (!content) return res.status(400).json({ error: 'Content is required' });
@@ -432,7 +370,6 @@ app.post('/api/posts/:id/comments', auth, async (req, res) => {
   res.status(201).json(result.rows[0]);
 });
 
-// PUT /api/comments/:id
 app.put('/api/comments/:id', auth, async (req, res) => {
   const { content } = req.body;
   if(!content) return res.status(400).json({ error: 'Content required' });
@@ -444,13 +381,11 @@ app.put('/api/comments/:id', auth, async (req, res) => {
   res.json(result.rows[0]);
 });
 
-// DELETE /api/comments/:id
 app.delete('/api/comments/:id', auth, async (req, res) => {
   await pool.query('DELETE FROM comments WHERE id=$1 AND user_id=$2', [req.params.id, req.user.id]);
   res.json({ message: 'Comment deleted' });
 });
 
-// POST /api/comments/:id/like  (toggle like)
 app.post('/api/comments/:id/like', auth, async (req, res) => {
   const commentId = req.params.id;
   try {
@@ -464,11 +399,8 @@ app.post('/api/comments/:id/like', auth, async (req, res) => {
   }
 });
 
-// ══════════════════════════════════════════════════════════════
-// REVIEWS
-// ══════════════════════════════════════════════════════════════
+// --- Reviews ---
 
-// GET /api/reviews
 app.get('/api/reviews', async (req, res) => {
   const result = await pool.query(
     `SELECT r.id, r.user_id, r.rating, r.review_text, r.created_at, u.full_name
@@ -479,7 +411,6 @@ app.get('/api/reviews', async (req, res) => {
   res.json(result.rows);
 });
 
-// POST /api/reviews
 app.post('/api/reviews', auth, async (req, res) => {
   const { rating, review_text } = req.body;
   if (!rating) return res.status(400).json({ error: 'Rating is required' });
@@ -490,7 +421,6 @@ app.post('/api/reviews', auth, async (req, res) => {
   res.status(201).json(result.rows[0]);
 });
 
-// PUT /api/reviews/:id
 app.put('/api/reviews/:id', auth, async (req, res) => {
   const { rating, review_text } = req.body;
   const result = await pool.query(
@@ -501,24 +431,19 @@ app.put('/api/reviews/:id', auth, async (req, res) => {
   res.json(result.rows[0]);
 });
 
-// DELETE /api/reviews/:id
 app.delete('/api/reviews/:id', auth, async (req, res) => {
   await pool.query('DELETE FROM reviews WHERE id=$1 AND user_id=$2', [req.params.id, req.user.id]);
   res.json({ message: 'Review deleted' });
 });
 
-// ══════════════════════════════════════════════════════════════
-// CATCH ALL — Serve frontend for any unmatched route
-// ══════════════════════════════════════════════════════════════
+// --- Catch-all: serve frontend ---
+
 app.get('/{*path}', (req, res) => {
   if(req.path.startsWith('/api/')) return res.status(404).json({ error: 'API route not found' });
   res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
-// ══════════════════════════════════════════════════════════════
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`✅ ScanSafe API running on http://localhost:${PORT}`);
-  console.log(`📁 Frontend served from ./frontend/`);
-  console.log(`🗄️  Database: ${process.env.DB_NAME || 'scansafe'}`);
+  console.log(`ScanSafe API running on http://localhost:${PORT}`);
 });
